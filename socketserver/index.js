@@ -24,7 +24,8 @@ const errorCode = {
 const getErrorCode = (code) => (errorCode[code] ? code : 30000);
 
 var users = {};
-const usersPoints = {};
+const kenoInfo = {};
+const mineInfo = {};
 
 var state = "true";
 
@@ -310,7 +311,7 @@ const listen = (io) => {
         if (user.coin_current < betValue) {
           socket.emit("k_error_Balance", {});
         } else {
-          usersPoints[user.username] = {
+          kenoInfo[user.username] = {
             RandomArray: [],
             ListArray: [],
             BallRandomNum: [],
@@ -319,7 +320,7 @@ const listen = (io) => {
             betBalance: 0,
             Clicknumber: 0,
           };
-          let userData = usersPoints[user.username];
+          let userData = kenoInfo[user.username];
           userData.betBalance = betValue;
           userData.Clicknumber = ClickNumber;
 
@@ -365,10 +366,10 @@ const listen = (io) => {
             username: user.username,
             coin_current: user.coin_current - betValue,
           });
-          usersPoints[id] = {
+          mineInfo[id] = {
             userName: {},
           };
-          usersPoints[id].userName[user.username] = {
+          mineInfo[id].userName[user.username] = {
             betAmount: betValue,
             randomArray: [],
             nextTileProfitCross: 0.95 / ((25 - BombNumber) / 25),
@@ -379,7 +380,7 @@ const listen = (io) => {
             positionInfo: [],
             gameId: id,
           };
-          let userData = usersPoints[id].userName[user.username];
+          let userData = mineInfo[id].userName[user.username];
           userData.randomArray = await CreateRandomArray(userData.mineNum);
           socket.emit("mine position", {
             mineNum: userData.mineNum,
@@ -404,7 +405,7 @@ const listen = (io) => {
         console.log("bet error");
         return;
       }
-      let userData = usersPoints[id].userName[user.username];
+      let userData = mineInfo[id].userName[user.username];
       if (userData.isBetting) {
         if (userData.gemNum == 1) {
           if (userData.randomArray[clicked_Card] == 0) {
@@ -466,7 +467,7 @@ const listen = (io) => {
           console.log("bet error");
           return;
         }
-        let userData = usersPoints[id].userName[user.username];
+        let userData = mineInfo[id].userName[user.username];
         await UserController.updatebalance({
           username: user.username,
           coin_current:
